@@ -12,6 +12,21 @@ class Text:
         window.blit(self.text, (x, y))
 
 
+class Cell:
+    def __init__(self, value, x, y):
+        self.value = value
+        self.x = x
+        self.y = y
+        self.color = cell_colors[value]
+        if value:
+            self.text = Texts_nums[value]
+
+    def draw(self):
+        pygame.draw.rect(window, self.color, (self.x * cell_size, self.y * cell_size, cell_size, cell_size))
+        if self.value:
+            self.text.draw(self.x * cell_size + (cell_size - self.text.text_width) / 2, self.y * cell_size + (cell_size - self.text.text_height) / 2)
+
+
 def main_loop():
     game_notOver = True
     while game_notOver:
@@ -30,14 +45,9 @@ def main_loop():
 def redraw():
     window.fill((250, 248, 239))
 
-    for r, row in enumerate(Grid):
-        for c, value in enumerate(row):
-            x = c * cell_size
-            y = r * cell_size
-            pygame.draw.rect(window, cell_colors[value], (x, y, cell_size, cell_size))
-            if value:
-                T = Texts_nums[value]
-                T.draw(x + (cell_size - T.text_width) / 2, y + (cell_size - T.text_height) / 2)
+    for row in Grid:
+        for cell in row:
+            cell.draw()
 
     pygame.display.update()
 
@@ -48,7 +58,7 @@ clock = pygame.time.Clock()
 window = pygame.display.set_mode((800, 700))
 
 font = pygame.font.SysFont("Verdana", 40, bold=True)
-Grid = [[2, 4, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 16, 8, 64]]
+
 cell_size = 100
 
 values = [2 ** i for i in range(1, 7 + 1)]
@@ -74,6 +84,11 @@ font_colors = {
     128: (249, 246, 242),
 }
 Texts_nums = {v: Text(str(v), font_colors[v], 35) for v in values}
+
+Grid = [[2, 4, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 16, 8, 64]]
+for r in range(4):
+    for c in range(4):
+        Grid[r][c] = Cell(Grid[r][c], r, c)
 
 main_loop()
 
