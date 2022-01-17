@@ -3,6 +3,15 @@
 import pygame
 
 
+class Text:
+    def __init__(self, text, color, font_size):
+        self.text_width, self.text_height = font.size(text)
+        self.text = font.render(text, True, color)
+
+    def draw(self, x, y):
+        window.blit(self.text, (x, y))
+
+
 def main_loop():
     game_notOver = True
     while game_notOver:
@@ -23,10 +32,12 @@ def redraw():
 
     for r, row in enumerate(Grid):
         for c, value in enumerate(row):
-            pygame.draw.rect(window, cell_colors[value], (100 * c, 100 * r, 100, 100))
+            x = c * cell_size
+            y = r * cell_size
+            pygame.draw.rect(window, cell_colors[value], (x, y, cell_size, cell_size))
             if value:
-                text = font.render(str(value), True, font_colors[value])
-                window.blit(text, (100 * c, 100 * r))
+                Num = Text(str(value), font_colors[value], 35)
+                Num.draw(x + (cell_size - Num.text_width) / 2, y + (cell_size - Num.text_height) / 2)
 
     pygame.display.update()
 
@@ -36,8 +47,9 @@ pygame.font.init()
 clock = pygame.time.Clock()
 window = pygame.display.set_mode((800, 700))
 
-font = pygame.font.SysFont("Verdana", 35)
+font = pygame.font.SysFont("Verdana", 40, bold=True)
 Grid = [[2, 4, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 16, 8, 64]]
+cell_size = 100
 
 cell_colors = {
     0: (205, 193, 180),
