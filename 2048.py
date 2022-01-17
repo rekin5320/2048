@@ -23,12 +23,10 @@ def redraw():
 
     for r, row in enumerate(Grid):
         for c, value in enumerate(row):
-            pygame.draw.rect(window, cell_color[value], (100 * c, 100 * r, 100, 100))
+            pygame.draw.rect(window, cell_colors[value], (100 * c, 100 * r, 100, 100))
             if value:
-                text = font.render(str(value), True, font_color[value])
+                text = font.render(str(value), True, font_colors[value])
                 window.blit(text, (100 * c, 100 * r))
-
-
 
     pygame.display.update()
 
@@ -41,7 +39,7 @@ window = pygame.display.set_mode((800, 700))
 font = pygame.font.SysFont("Verdana", 35)
 Grid = [[2, 4, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 16, 8, 64]]
 
-cell_color = {
+cell_colors = {
     0: (205, 193, 180),
     2: (238, 228, 218),
     4: (237, 224, 200),
@@ -52,7 +50,7 @@ cell_color = {
     128: (237, 207, 114),
 }
 
-font_color = {
+font_colors = {
     2: (119, 110, 98),
     4: (119, 110, 98),
     8: (249, 246, 242),
