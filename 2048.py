@@ -36,8 +36,8 @@ def redraw():
             y = r * cell_size
             pygame.draw.rect(window, cell_colors[value], (x, y, cell_size, cell_size))
             if value:
-                Num = Text(str(value), font_colors[value], 35)
-                Num.draw(x + (cell_size - Num.text_width) / 2, y + (cell_size - Num.text_height) / 2)
+                T = Texts_nums[value]
+                T.draw(x + (cell_size - T.text_width) / 2, y + (cell_size - T.text_height) / 2)
 
     pygame.display.update()
 
@@ -50,6 +50,8 @@ window = pygame.display.set_mode((800, 700))
 font = pygame.font.SysFont("Verdana", 40, bold=True)
 Grid = [[2, 4, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 16, 8, 64]]
 cell_size = 100
+
+values = [2 ** i for i in range(1, 7 + 1)]
 
 cell_colors = {
     0: (205, 193, 180),
@@ -71,6 +73,7 @@ font_colors = {
     64: (249, 246, 242),
     128: (249, 246, 242),
 }
+Texts_nums = {v: Text(str(v), font_colors[v], 35) for v in values}
 
 main_loop()
 
