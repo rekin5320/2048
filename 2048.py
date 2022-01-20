@@ -4,7 +4,7 @@ import pygame
 
 
 class Text:
-    def __init__(self, text, color, font_size):
+    def __init__(self, text, color):
         self.text_width, self.text_height = font.size(text)
         self.text = font.render(text, True, color)
 
@@ -13,22 +13,37 @@ class Text:
 
 
 class Cell:
-    def __init__(self, value, x, y):
+    def __init__(self, value):
         self.value = value
-        self.x = x
-        self.y = y
         self.color = cell_colors[value]
         if value:
             self.text = Texts_nums[value]
 
-    def draw(self):
-        pygame.draw.rect(window, self.color, (self.x * cell_size, self.y * cell_size, cell_size, cell_size))
+    def draw(self, row, col):
+        pygame.draw.rect(window, self.color, (col * cell_size, row * cell_size, cell_size, cell_size))
         if self.value:
-            self.text.draw(self.x * cell_size + (cell_size - self.text.text_width) / 2, self.y * cell_size + (cell_size - self.text.text_height) / 2)
+            self.text.draw(col * cell_size + (cell_size - self.text.text_width) / 2, row * cell_size + (cell_size - self.text.text_height) / 2)
+
+
+def move_grid(x, y):
+    global Grid
+    if x == 1:
+        for yy in range(0, 4):
+            for xx1, xx2 in zip(range(0, 3), range(1, 4)):
+                if not Grid[xx2][yy]:  # is empty
+                    Grid[xx1][yy], Grid[xx2][yy], = Grid[xx2][yy], Grid[xx1][yy]
+    elif x == -1:
+        pass
+    else:
+        for c in range(4):
+            for yy in (range(0, 5, 1) if y == 1 else range(5, 0, -1)):
+                print(yy, c)
 
 
 def main_loop():
     game_notOver = True
+    moved = False
+    x, y = 0, 0
     while game_notOver:
         clock.tick(60)
 
@@ -39,15 +54,37 @@ def main_loop():
             if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
                 game_notOver = False
 
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            moved = True
+            x = -1
+            y = 0
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            moved = True
+            x = 1
+            y = 0
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            moved = True
+            x = 0
+            y = -1
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            moved = True
+            x = 0
+            y = 1
+
+        if moved:
+            move_grid(x, y)
+        # print(moved, x, y)
+        moved = False
+
         redraw()
 
 
 def redraw():
     window.fill((250, 248, 239))
 
-    for row in Grid:
-        for cell in row:
-            cell.draw()
+    for c, row in enumerate(Grid):
+        for r, val in enumerate(row):
+            Cells[val].draw(r, c)
 
     pygame.display.update()
 
@@ -61,7 +98,7 @@ font = pygame.font.SysFont("Verdana", 40, bold=True)
 
 cell_size = 100
 
-values = [2 ** i for i in range(1, 7 + 1)]
+values = [0] + [2 ** i for i in range(1, 7 + 1)]
 
 cell_colors = {
     0: (205, 193, 180),
@@ -83,12 +120,11 @@ font_colors = {
     64: (249, 246, 242),
     128: (249, 246, 242),
 }
-Texts_nums = {v: Text(str(v), font_colors[v], 35) for v in values}
+Texts_nums = {v: Text(str(v), font_colors[v]) for v in values[1:]}
 
 Grid = [[2, 4, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 16, 8, 64]]
-for r in range(4):
-    for c in range(4):
-        Grid[r][c] = Cell(Grid[r][c], r, c)
+Cells = {i: Cell(i) for i in values}
+
 
 main_loop()
 
