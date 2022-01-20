@@ -28,10 +28,10 @@ class Cell:
 def move_grid(dir_x, dir_y):
     global Grid
     if dir_x == 1:
-        for yy in range(0, 4):
-            for xx1, xx2 in zip(range(0, 3), range(1, 4)):
-                if not Grid[xx2][yy]:  # is empty
-                    Grid[xx1][yy], Grid[xx2][yy], = Grid[xx2][yy], Grid[xx1][yy]
+        for row in range(0, 4):
+            for col1, col2 in zip(range(0, 3), range(1, 4)):
+                if not Grid[row][col2]:  # is empty
+                    Grid[row][col2], Grid[row][col1], = Grid[row][col1], Grid[row][col2]
     elif dir_x == -1:
         pass
     else:
@@ -81,9 +81,9 @@ def main_loop():
 def redraw():
     window.fill((250, 248, 239))
 
-    for c, row in enumerate(Grid):
-        for r, val in enumerate(row):
-            Cells[val].draw(r, c)
+    for row, row_of_cells in enumerate(Grid):
+        for col, val in enumerate(row_of_cells):
+            Cells[val].draw(row, col)
 
     pygame.display.update()
 
