@@ -26,12 +26,12 @@ class Cell:
 
 
 def move_grid(dir_x, dir_y):
-    global Grid
+    global Matrix
     if dir_x == 1:
         for row in range(0, 4):
             for col1, col2 in zip(range(0, 3), range(1, 4)):
-                if not Grid[row][col2]:  # is empty
-                    Grid[row][col2], Grid[row][col1], = Grid[row][col1], Grid[row][col2]
+                if not Matrix[row][col2]:  # is empty
+                    Matrix[row][col2], Matrix[row][col1], = Matrix[row][col1], Matrix[row][col2]
     elif dir_x == -1:
         pass
     else:
@@ -81,7 +81,7 @@ def main_loop():
 def redraw():
     window.fill((250, 248, 239))
 
-    for row, row_of_cells in enumerate(Grid):
+    for row, row_of_cells in enumerate(Matrix):
         for col, val in enumerate(row_of_cells):
             Cells[val].draw(row, col)
 
@@ -121,7 +121,7 @@ font_colors = {
 }
 Texts_nums = {v: Text(str(v), font_colors[v]) for v in values[1:]}
 
-Grid = [[2, 4, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 16, 8, 64]]
+Matrix = [[2, 4, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 16, 8, 64]]
 Cells = {i: Cell(i) for i in values}
 
 
