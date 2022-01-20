@@ -91,7 +91,7 @@ def redraw():
 pygame.display.init()
 pygame.font.init()
 clock = pygame.time.Clock()
-window = pygame.display.set_mode((800, 700))
+window = pygame.display.set_mode((400, 400))
 
 font = pygame.font.SysFont("Verdana", 40, bold=True)
 
