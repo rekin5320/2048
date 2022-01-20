@@ -25,25 +25,25 @@ class Cell:
             self.text.draw(col * cell_size + (cell_size - self.text.text_width) / 2, row * cell_size + (cell_size - self.text.text_height) / 2)
 
 
-def move_grid(x, y):
+def move_grid(dir_x, dir_y):
     global Grid
-    if x == 1:
+    if dir_x == 1:
         for yy in range(0, 4):
             for xx1, xx2 in zip(range(0, 3), range(1, 4)):
                 if not Grid[xx2][yy]:  # is empty
                     Grid[xx1][yy], Grid[xx2][yy], = Grid[xx2][yy], Grid[xx1][yy]
-    elif x == -1:
+    elif dir_x == -1:
         pass
     else:
         for c in range(4):
-            for yy in (range(0, 5, 1) if y == 1 else range(5, 0, -1)):
+            for yy in (range(0, 5, 1) if dir_y == 1 else range(5, 0, -1)):
                 print(yy, c)
 
 
 def main_loop():
     game_notOver = True
     moved = False
-    x, y = 0, 0
+    dir_x, dir_y = 0, 0
     while game_notOver:
         clock.tick(60)
 
@@ -56,24 +56,23 @@ def main_loop():
 
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             moved = True
-            x = -1
-            y = 0
+            dir_x = -1
+            dir_y = 0
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             moved = True
-            x = 1
-            y = 0
+            dir_x = 1
+            dir_y = 0
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             moved = True
-            x = 0
-            y = -1
+            dir_x = 0
+            dir_y = -1
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             moved = True
-            x = 0
-            y = 1
+            dir_x = 0
+            dir_y = 1
 
         if moved:
-            move_grid(x, y)
-        # print(moved, x, y)
+            move_grid(dir_x, dir_y)
         moved = False
 
         redraw()
