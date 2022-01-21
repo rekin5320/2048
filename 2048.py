@@ -37,10 +37,16 @@ def move_grid(dir_x, dir_y):
             for col1, col2 in zip(range(0, 3), range(1, 4)):
                 if not Matrix[row][col1]:  # is empty
                     Matrix[row][col2], Matrix[row][col1], = Matrix[row][col1], Matrix[row][col2]
-    else:
-        for c in range(4):
-            for yy in (range(0, 5, 1) if dir_y == 1 else range(5, 0, -1)):
-                print(yy, c)
+    elif dir_y == 1:
+        for col in range(0, 4):
+            for row1, row2 in zip(range(2, -1, -1), range(3, 0, -1)):
+                if not Matrix[row2][col]:  # is empty
+                    Matrix[row1][col], Matrix[row2][col], = Matrix[row2][col], Matrix[row1][col]
+    else:  # dir_y == -1
+        for col in range(0, 4):
+            for row1, row2 in zip(range(0, 3), range(1, 4)):
+                if not Matrix[row1][col]:  # is empty
+                    Matrix[row1][col], Matrix[row2][col], = Matrix[row2][col], Matrix[row1][col]
 
 
 def main_loop():
