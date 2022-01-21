@@ -40,16 +40,25 @@ def move_grid(dir_x, dir_y):
             for col1, col2 in zip(range(0, 3), range(1, 4)):
                 if not Matrix[row][col1]:  # is empty
                     Matrix[row][col2], Matrix[row][col1], = Matrix[row][col1], Matrix[row][col2]
+                elif Matrix[row][col1] == Matrix[row][col2]:  # merge
+                    Matrix[row][col1] *= 2
+                    Matrix[row][col2] = 0
     elif dir_y == 1:
         for col in range(0, 4):
             for row1, row2 in zip(range(2, -1, -1), range(3, 0, -1)):
                 if not Matrix[row2][col]:  # is empty
                     Matrix[row1][col], Matrix[row2][col], = Matrix[row2][col], Matrix[row1][col]
+                elif Matrix[row1][col] == Matrix[row2][col]:  # merge
+                    Matrix[row2][col] *= 2
+                    Matrix[row1][col] = 0
     else:  # dir_y == -1
         for col in range(0, 4):
             for row1, row2 in zip(range(0, 3), range(1, 4)):
                 if not Matrix[row1][col]:  # is empty
                     Matrix[row1][col], Matrix[row2][col], = Matrix[row2][col], Matrix[row1][col]
+                elif Matrix[row1][col] == Matrix[row2][col]:  # merge
+                    Matrix[row1][col] *= 2
+                    Matrix[row2][col] = 0
 
 
 def main_loop():
