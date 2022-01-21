@@ -29,11 +29,14 @@ def move_grid(dir_x, dir_y):
     global Matrix
     if dir_x == 1:
         for row in range(0, 4):
-            for col1, col2 in zip(range(0, 3), range(1, 4)):
+            for col1, col2 in zip(range(2, -1, -1), range(3, 0, -1)):
                 if not Matrix[row][col2]:  # is empty
                     Matrix[row][col2], Matrix[row][col1], = Matrix[row][col1], Matrix[row][col2]
     elif dir_x == -1:
-        pass
+        for row in range(0, 4):
+            for col1, col2 in zip(range(0, 3), range(1, 4)):
+                if not Matrix[row][col1]:  # is empty
+                    Matrix[row][col2], Matrix[row][col1], = Matrix[row][col1], Matrix[row][col2]
     else:
         for c in range(4):
             for yy in (range(0, 5, 1) if dir_y == 1 else range(5, 0, -1)):
@@ -121,7 +124,7 @@ font_colors = {
 }
 Texts_nums = {v: Text(str(v), font_colors[v]) for v in values[1:]}
 
-Matrix = [[2, 4, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 16, 8, 64]]
+Matrix = [[2, 8, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 8, 0, 64]]
 Cells = {i: Cell(i) for i in values}
 
 
