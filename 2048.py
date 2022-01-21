@@ -32,6 +32,9 @@ def move_grid(dir_x, dir_y):
             for col1, col2 in zip(range(2, -1, -1), range(3, 0, -1)):
                 if not Matrix[row][col2]:  # is empty
                     Matrix[row][col2], Matrix[row][col1], = Matrix[row][col1], Matrix[row][col2]
+                elif Matrix[row][col1] == Matrix[row][col2]:  # merge
+                    Matrix[row][col2] *= 2
+                    Matrix[row][col1] = 0
     elif dir_x == -1:
         for row in range(0, 4):
             for col1, col2 in zip(range(0, 3), range(1, 4)):
