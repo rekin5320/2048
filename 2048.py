@@ -17,7 +17,7 @@ class Cell:
         self.value = value
         self.color = cell_colors[value]
         if value:
-            self.text = Texts_nums[value]
+            self.text = Text(str(value), font_colors[value])
 
     def draw(self, row, col):
         pygame.draw.rect(window, self.color, (col * cell_size, row * cell_size, cell_size, cell_size))
@@ -140,7 +140,6 @@ font_colors = {
     64: (249, 246, 242),
     128: (249, 246, 242),
 }
-Texts_nums = {v: Text(str(v), font_colors[v]) for v in values[1:]}
 
 Matrix = [[2, 8, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 8, 0, 64]]
 Cells = {i: Cell(i) for i in values}
