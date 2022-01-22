@@ -25,39 +25,40 @@ class Cell:
             self.text.draw(col * cell_size + (cell_size - self.text.text_width) / 2, row * cell_size + (cell_size - self.text.text_height) / 2)
 
 
-def move_grid(dir_x, dir_y):
+def merge_cells(row_absorbent, col_absorbent, row_absorbed, col_absorbed):
+    Matrix[row_absorbent][col_absorbent] *= 2
+    Matrix[row_absorbed][col_absorbed] = 0
+
+
+def move_cells(dir_x, dir_y):
     if dir_x == 1:
         for row in range(0, 4):
             for col1, col2 in zip(range(2, -1, -1), range(3, 0, -1)):
                 if not Matrix[row][col2]:  # is empty
                     Matrix[row][col2], Matrix[row][col1], = Matrix[row][col1], Matrix[row][col2]
-                elif Matrix[row][col1] == Matrix[row][col2]:  # merge
-                    Matrix[row][col2] *= 2
-                    Matrix[row][col1] = 0
+                elif Matrix[row][col1] == Matrix[row][col2]:
+                    merge_cells(row, col2, row, col1)
     elif dir_x == -1:
         for row in range(0, 4):
             for col1, col2 in zip(range(0, 3), range(1, 4)):
                 if not Matrix[row][col1]:  # is empty
                     Matrix[row][col2], Matrix[row][col1], = Matrix[row][col1], Matrix[row][col2]
-                elif Matrix[row][col1] == Matrix[row][col2]:  # merge
-                    Matrix[row][col1] *= 2
-                    Matrix[row][col2] = 0
+                elif Matrix[row][col1] == Matrix[row][col2]:
+                    merge_cells(row, col1, row, col2)
     elif dir_y == 1:
         for col in range(0, 4):
             for row1, row2 in zip(range(2, -1, -1), range(3, 0, -1)):
                 if not Matrix[row2][col]:  # is empty
                     Matrix[row1][col], Matrix[row2][col], = Matrix[row2][col], Matrix[row1][col]
-                elif Matrix[row1][col] == Matrix[row2][col]:  # merge
-                    Matrix[row2][col] *= 2
-                    Matrix[row1][col] = 0
+                elif Matrix[row1][col] == Matrix[row2][col]:
+                    merge_cells(row2, col, row1, col)
     else:  # dir_y == -1
         for col in range(0, 4):
             for row1, row2 in zip(range(0, 3), range(1, 4)):
                 if not Matrix[row1][col]:  # is empty
                     Matrix[row1][col], Matrix[row2][col], = Matrix[row2][col], Matrix[row1][col]
-                elif Matrix[row1][col] == Matrix[row2][col]:  # merge
-                    Matrix[row1][col] *= 2
-                    Matrix[row2][col] = 0
+                elif Matrix[row1][col] == Matrix[row2][col]:
+                    merge_cells(row1, col, row2, col)
 
 
 def main_loop():
@@ -92,7 +93,7 @@ def main_loop():
             dir_y = 1
 
         if moved:
-            move_grid(dir_x, dir_y)
+            move_cells(dir_x, dir_y)
         moved = False
 
         redraw()
