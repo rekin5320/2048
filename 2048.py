@@ -26,7 +26,6 @@ class Cell:
 
 
 def move_grid(dir_x, dir_y):
-    global Matrix
     if dir_x == 1:
         for row in range(0, 4):
             for col1, col2 in zip(range(2, -1, -1), range(3, 0, -1)):
