@@ -33,7 +33,13 @@ def merge_cells(row_absorbent, col_absorbent, row_absorbed, col_absorbed):
 def move_cells(dir_x, dir_y):
     if dir_x == 1:
         for row in range(0, 4):
-            for col1, col2 in zip(range(2, -1, -1), range(3, 0, -1)):
+            for col1 in range(2, -1, -1):
+                col2 = col1 + 1
+                while True:  # finding maximum movement
+                    if col2 == 3 or Matrix[row][col2 + 1]:
+                        break
+                    else:
+                        col2 += 1
                 if not Matrix[row][col2]:  # is empty
                     Matrix[row][col2], Matrix[row][col1], = Matrix[row][col1], Matrix[row][col2]
                 elif Matrix[row][col1] == Matrix[row][col2]:
