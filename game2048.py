@@ -134,7 +134,7 @@ class Game:
 
                 if pressed_key:
                     self.move_time_remaining = self.move_time
-                    moved = self.move_cells(dir_x, dir_y)
+                    moved = self.move_matrix(dir_x, dir_y)
                     if moved:
                         self.spawn_cell()
             else:
@@ -163,6 +163,10 @@ class Game:
         row, col = random.choice(free_tiles)
         self.M[row][col] = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 4])
 
+    def move_cell(self, row_start, col_start, row_end, col_end):
+        self.M[row_end][col_end] = self.M[row_start][col_start]
+        self.M[row_start][col_start] = 0
+
     def merge_cells(self, row_absorbent, col_absorbent, row_absorbed, col_absorbed):
         self.M[row_absorbent][col_absorbent] *= 2
         self.M[row_absorbed][col_absorbed] = 0
@@ -179,7 +183,7 @@ class Game:
                 row_end += dir_y
             return row_end
 
-    def move_cells(self, dir_x, dir_y):
+    def move_matrix(self, dir_x, dir_y):
         moved = False
         if dir_x != 0:  # x direction
             for row in range(0, 4):
@@ -187,8 +191,7 @@ class Game:
                     if self.M[row][col_start] and not ((col_start == 0 and dir_x < 0) or (col_start == 3 and dir_x > 0)):
                         col_end = self.find_maximum_movement(row, col_start, dir_x, dir_y)
                         if not self.M[row][col_end]:  # is empty
-                            self.M[row][col_end] = self.M[row][col_start]
-                            self.M[row][col_start] = 0
+                            self.move_cell(row, col_start, row, col_end)
                             moved = True
                             self.animations_to_do[(row, col_end)] = Animation(row, col_start, row, col_end, self.M[row][col_end])
                         elif self.M[row][col_start] == self.M[row][col_end]:
@@ -200,8 +203,7 @@ class Game:
                     if self.M[row_start][col] and not ((row_start == 0 and dir_y < 0) or (row_start == 3 and dir_y > 0)):
                         row_end = self.find_maximum_movement(row_start, col, dir_x, dir_y)
                         if not self.M[row_end][col]:  # is empty
-                            self.M[row_end][col] = self.M[row_start][col]
-                            self.M[row_start][col] = 0
+                            self.move_cell(row_start, col, row_end, col)
                             moved = True
                             self.animations_to_do[(row_end, col)] = Animation(row_start, col, row_end, col, self.M[row_end][col])
                         elif self.M[row_start][col] == self.M[row_end][col]:
