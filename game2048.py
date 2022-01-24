@@ -47,7 +47,7 @@ def find_maximum_movement(row_start, col_start, dir_x, dir_y):
 def spawn_cell():
     free_tiles = [(row, col) for row, row_of_cells in enumerate(Matrix) for col, val in enumerate(row_of_cells) if not val]
     row, col = random.choice(free_tiles)
-    Matrix[row][col] = 2
+    Matrix[row][col] = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 4])
 
 
 def move_cells(dir_x, dir_y):
