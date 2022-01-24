@@ -63,10 +63,10 @@ def move_cells(dir_x, dir_y):
 
 def main_loop():
     game_notOver = True
-    moved = False
+    move_time_remaining = 0
     dir_x, dir_y = 0, 0
     while game_notOver:
-        clock.tick(60)
+        clock.tick(fps)
 
         keys = pygame.key.get_pressed()
         mouse = pygame.mouse.get_pos()
@@ -75,26 +75,28 @@ def main_loop():
             if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
                 game_notOver = False
 
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            moved = True
-            dir_x = -1
-            dir_y = 0
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            moved = True
-            dir_x = 1
-            dir_y = 0
-        if keys[pygame.K_UP] or keys[pygame.K_w]:
-            moved = True
-            dir_x = 0
-            dir_y = -1
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            moved = True
-            dir_x = 0
-            dir_y = 1
+        if not move_time_remaining:
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                move_time_remaining = move_time
+                dir_x = -1
+                dir_y = 0
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                move_time_remaining = move_time
+                dir_x = 1
+                dir_y = 0
+            if keys[pygame.K_UP] or keys[pygame.K_w]:
+                move_time_remaining = move_time
+                dir_x = 0
+                dir_y = -1
+            if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                move_time_remaining = move_time
+                dir_x = 0
+                dir_y = 1
 
-        if moved:
-            move_cells(dir_x, dir_y)
-        moved = False
+            if move_time_remaining:
+                move_cells(dir_x, dir_y)
+        else:
+            move_time_remaining -= 1
 
         redraw()
 
@@ -117,6 +119,8 @@ window = pygame.display.set_mode((400, 400))
 font = pygame.font.SysFont("Verdana", 40, bold=True)
 
 cell_size = 100
+fps = 60
+move_time = fps * 1
 
 values = [0] + [2 ** i for i in range(1, 7 + 1)]
 
