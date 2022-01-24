@@ -118,13 +118,6 @@ def redraw():
     pygame.display.update()
 
 
-pygame.display.init()
-pygame.font.init()
-clock = pygame.time.Clock()
-window = pygame.display.set_mode((400, 400))
-
-font = pygame.font.SysFont("Verdana", 40, bold=True)
-
 cell_size = 100
 fps = 60
 move_time = fps * 1
@@ -161,9 +154,17 @@ font_colors = {
 }
 
 Matrix = [[2, 8, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 8, 0, 64]]
-Cells = {i: Cell(i) for i in values}
 
 
-main_loop()
+if __name__ == "__main__":
+    pygame.display.init()
+    pygame.font.init()
+    clock = pygame.time.Clock()
+    window = pygame.display.set_mode((400, 400))
 
-pygame.quit()
+    font = pygame.font.SysFont("Verdana", 40, bold=True)
+    Cells = {i: Cell(i) for i in values}
+
+    main_loop()
+
+    pygame.quit()
