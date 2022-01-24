@@ -179,12 +179,12 @@ class Game:
     def find_maximum_movement(self, row_start, col_start, dir_x, dir_y):
         if dir_x != 0:  # x direction
             col_end = col_start + dir_x
-            while 0 < col_end < 3 and not self.M[row_start][col_end] and ((not self.M[row_start][col_end + dir_x]) or self.M[row_start][col_start] == self.M[row_start][col_end + dir_x]) and (row_start, col_end + dir_x) not in self.no_longer_mergeable:
+            while 0 < col_end < 3 and not self.M[row_start][col_end] and (not self.M[row_start][col_end + dir_x] or self.M[row_start][col_start] == self.M[row_start][col_end + dir_x]) and (row_start, col_end + dir_x) not in self.no_longer_mergeable:
                 col_end += dir_x
             return col_end
         else:  # y direction
             row_end = row_start + dir_y
-            while 0 < row_end < 3 and not self.M[row_end][col_start] and ((not self.M[row_end + dir_y][col_start]) or self.M[row_start][col_start] == self.M[row_end + dir_y][col_start]) and (row_end, col_start) not in self.no_longer_mergeable:
+            while 0 < row_end < 3 and not self.M[row_end][col_start] and (not self.M[row_end + dir_y][col_start] or self.M[row_start][col_start] == self.M[row_end + dir_y][col_start]) and (row_end, col_start) not in self.no_longer_mergeable:
                 row_end += dir_y
             return row_end
 
