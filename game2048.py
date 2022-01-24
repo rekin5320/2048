@@ -77,9 +77,9 @@ class Animation:
 class Game:
     cell_size = 100
     fps = 60
-    move_time = 100
+    move_time = 50
     values = [0] + [2 ** i for i in range(1, 10 + 1)]
-    animations_to_do = {}
+    animations = {}
 
     def __init__(self):
         pass
@@ -117,8 +117,9 @@ class Game:
                     self.game_notOver = False
 
             if self.move_time_remaining == 0:
-                if self.animations_to_do:
-                    self.animations_to_do = {}
+                if self.animations:  # something has moved
+                    self.animations = {}
+                    self.spawn_cell()
 
                 pressed_key = True
                 if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -134,9 +135,7 @@ class Game:
 
                 if pressed_key:
                     self.move_time_remaining = self.move_time
-                    moved = self.move_matrix(dir_x, dir_y)
-                    if moved:
-                        self.spawn_cell()
+                    self.move_matrix(dir_x, dir_y)
             else:
                 self.move_time_remaining -= 1
 
@@ -147,12 +146,12 @@ class Game:
 
         for row, row_of_cells in enumerate(self.M):
             for col, val in enumerate(row_of_cells):
-                if (row, col) in self.animations_to_do:
+                if (row, col) in self.animations:
                     G.CellsPrerendered[0].draw(col * G.cell_size, row * G.cell_size)
                 else:
                     G.CellsPrerendered[val].draw(col * G.cell_size, row * G.cell_size)
 
-        for anim in self.animations_to_do.values():
+        for anim in self.animations.values():
             anim.draw()
 
         pygame.display.update()
@@ -164,52 +163,50 @@ class Game:
         self.M[row][col] = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 4])
 
     def move_cell(self, row_start, col_start, row_end, col_end):
+        self.animations[(row_end, col_end)] = Animation(row_start, col_start, row_end, col_end, self.M[row_start][col_start])
         self.M[row_end][col_end] = self.M[row_start][col_start]
         self.M[row_start][col_start] = 0
 
     def merge_cells(self, row_absorbent, col_absorbent, row_absorbed, col_absorbed):
+        self.animations[(row_absorbed, col_absorbed)] = Animation(row_absorbed, col_absorbed, row_absorbent, col_absorbent, self.M[row_absorbent][col_absorbent])
+        if (row_absorbent, col_absorbent) not in self.animations:  # absorbent is on edge
+            self.animations[(row_absorbent, col_absorbent)] = Animation(row_absorbent, col_absorbent, row_absorbent, col_absorbent, self.M[row_absorbent][col_absorbent])
         self.M[row_absorbent][col_absorbent] *= 2
         self.M[row_absorbed][col_absorbed] = 0
+        self.no_longer_mergeable.add((row_absorbent, col_absorbent))
 
     def find_maximum_movement(self, row_start, col_start, dir_x, dir_y):
         if dir_x != 0:  # x direction
             col_end = col_start + dir_x
-            while 0 < col_end < 3 and not self.M[row_start][col_end] and ((not self.M[row_start][col_end + dir_x]) or self.M[row_start][col_start] == self.M[row_start][col_end + dir_x]):
+            while 0 < col_end < 3 and not self.M[row_start][col_end] and ((not self.M[row_start][col_end + dir_x]) or self.M[row_start][col_start] == self.M[row_start][col_end + dir_x]) and (row_start, col_end + dir_x) not in self.no_longer_mergeable:
                 col_end += dir_x
             return col_end
         else:  # y direction
             row_end = row_start + dir_y
-            while 0 < row_end < 3 and not self.M[row_end][col_start] and ((not self.M[row_end + dir_y][col_start]) or self.M[row_start][col_start] == self.M[row_end + dir_y][col_start]):
+            while 0 < row_end < 3 and not self.M[row_end][col_start] and ((not self.M[row_end + dir_y][col_start]) or self.M[row_start][col_start] == self.M[row_end + dir_y][col_start]) and (row_end, col_start) not in self.no_longer_mergeable:
                 row_end += dir_y
             return row_end
 
     def move_matrix(self, dir_x, dir_y):
-        moved = False
+        self.no_longer_mergeable = set()
         if dir_x != 0:  # x direction
             for row in range(0, 4):
                 for col_start in (range(2, -1, -1) if dir_x > 0 else range(0, 4)):
                     if self.M[row][col_start] and not ((col_start == 0 and dir_x < 0) or (col_start == 3 and dir_x > 0)):
                         col_end = self.find_maximum_movement(row, col_start, dir_x, dir_y)
-                        if not self.M[row][col_end]:  # is empty
+                        if not self.M[row][col_end]:
                             self.move_cell(row, col_start, row, col_end)
-                            moved = True
-                            self.animations_to_do[(row, col_end)] = Animation(row, col_start, row, col_end, self.M[row][col_end])
-                        elif self.M[row][col_start] == self.M[row][col_end]:
+                        elif self.M[row][col_start] == self.M[row][col_end] and (row, col_end) not in self.no_longer_mergeable:
                             self.merge_cells(row, col_end, row, col_start)
-                            moved = True
         else:  # y direction
             for col in range(0, 4):
                 for row_start in (range(2, -1, -1) if dir_y > 0 else range(0, 4)):
                     if self.M[row_start][col] and not ((row_start == 0 and dir_y < 0) or (row_start == 3 and dir_y > 0)):
                         row_end = self.find_maximum_movement(row_start, col, dir_x, dir_y)
-                        if not self.M[row_end][col]:  # is empty
+                        if not self.M[row_end][col]:
                             self.move_cell(row_start, col, row_end, col)
-                            moved = True
-                            self.animations_to_do[(row_end, col)] = Animation(row_start, col, row_end, col, self.M[row_end][col])
-                        elif self.M[row_start][col] == self.M[row_end][col]:
+                        elif self.M[row_start][col] == self.M[row_end][col] and (row_end, col) not in self.no_longer_mergeable:
                             self.merge_cells(row_end, col, row_start, col)
-                            moved = True
-        return moved
 
 
 G = Game()
