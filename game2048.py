@@ -116,21 +116,24 @@ class Game:
                 if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
                     self.game_notOver = False
 
-            if not self.move_time_remaining:
+            if self.move_time_remaining == 0:
+                if self.animations_to_do:
+                    self.animations_to_do = {}
+
+                pressed_key = True
                 if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                    self.move_time_remaining = self.move_time
                     dir_x, dir_y = -1, 0
                 elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-                    self.move_time_remaining = self.move_time
                     dir_x, dir_y = 1, 0
                 elif keys[pygame.K_UP] or keys[pygame.K_w]:
-                    self.move_time_remaining = self.move_time
                     dir_x, dir_y = 0, -1
                 elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
-                    self.move_time_remaining = self.move_time
                     dir_x, dir_y = 0, 1
+                else:
+                    pressed_key = False
 
-                if self.move_time_remaining:
+                if pressed_key:
+                    self.move_time_remaining = self.move_time
                     moved = self.move_cells(dir_x, dir_y)
                     if moved:
                         self.spawn_cell()
@@ -151,8 +154,6 @@ class Game:
 
         for anim in self.animations_to_do.values():
             anim.draw()
-        if self.move_time_remaining == 0:
-            self.animations_to_do = {}
 
         pygame.display.update()
 
