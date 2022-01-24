@@ -113,7 +113,7 @@ def redraw():
 
     for row, row_of_cells in enumerate(Matrix):
         for col, val in enumerate(row_of_cells):
-            Cells[val].draw(row, col)
+            CellsPrerendered[val].draw(row, col)
 
     pygame.display.update()
 
@@ -163,7 +163,7 @@ if __name__ == "__main__":
     window = pygame.display.set_mode((400, 400))
 
     font = pygame.font.SysFont("Verdana", 40, bold=True)
-    Cells = {i: Cell(i) for i in values}
+    CellsPrerendered = {i: Cell(i) for i in values}
 
     main_loop()
 
