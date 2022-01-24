@@ -166,7 +166,9 @@ font_colors = {
     2048: (249, 246, 242),
 }
 
-Matrix = [[2, 8, 8, 0], [0, 16, 64, 8], [128, 32, 0, 4], [0, 8, 0, 64]]
+Matrix = [[0, 0, 0, 0] for _ in range(4)]
+spawn_cell()
+spawn_cell()
 
 
 if __name__ == "__main__":
