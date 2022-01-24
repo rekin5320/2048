@@ -44,38 +44,24 @@ def find_maximum_movement(row_start, col_start, dir_x, dir_y):
 
 
 def move_cells(dir_x, dir_y):
-    if dir_x == 1:
+    if dir_x != 0:  # x direction
         for row in range(0, 4):
-            for col1 in range(2, -1, -1):
-                col2 = find_maximum_movement(row, col1, dir_x, dir_y)
-                if not Matrix[row][col2]:  # is empty
-                    Matrix[row][col2], Matrix[row][col1], = Matrix[row][col1], Matrix[row][col2]
-                elif Matrix[row][col1] == Matrix[row][col2]:
-                    merge_cells(row, col2, row, col1)
-    elif dir_x == -1:
-        for row in range(0, 4):
-            for col2 in range(1, 4):
-                col1 = find_maximum_movement(row, col2, dir_x, dir_y)
-                if not Matrix[row][col1]:  # is empty
-                    Matrix[row][col2], Matrix[row][col1], = Matrix[row][col1], Matrix[row][col2]
-                elif Matrix[row][col1] == Matrix[row][col2]:
-                    merge_cells(row, col1, row, col2)
-    elif dir_y == 1:
+            for col_start in (range(2, -1, -1) if dir_x > 0 else range(0, 4)):
+                col_end = find_maximum_movement(row, col_start, dir_x, dir_y)
+                if not Matrix[row][col_end]:  # is empty
+                    Matrix[row][col_end] = Matrix[row][col_start]
+                    Matrix[row][col_start] = 0
+                elif Matrix[row][col_start] == Matrix[row][col_end]:
+                    merge_cells(row, col_end, row, col_start)
+    else:  # y direction
         for col in range(0, 4):
-            for row1 in range(2, -1, -1):
-                row2 = find_maximum_movement(row1, col, dir_x, dir_y)
-                if not Matrix[row2][col]:  # is empty
-                    Matrix[row1][col], Matrix[row2][col], = Matrix[row2][col], Matrix[row1][col]
-                elif Matrix[row1][col] == Matrix[row2][col]:
-                    merge_cells(row2, col, row1, col)
-    else:  # dir_y == -1
-        for col in range(0, 4):
-            for row2 in range(1, 4):
-                row1 = find_maximum_movement(row2, col, dir_x, dir_y)
-                if not Matrix[row1][col]:  # is empty
-                    Matrix[row1][col], Matrix[row2][col], = Matrix[row2][col], Matrix[row1][col]
-                elif Matrix[row1][col] == Matrix[row2][col]:
-                    merge_cells(row1, col, row2, col)
+            for row_start in (range(2, -1, -1) if dir_y > 0 else range(0, 4)):
+                row_end = find_maximum_movement(row_start, col, dir_x, dir_y)
+                if not Matrix[row_end][col]:  # is empty
+                    Matrix[row_end][col] = Matrix[row_start][col]
+                    Matrix[row_start][col] = 0
+                elif Matrix[row_start][col] == Matrix[row_end][col]:
+                    merge_cells(row_end, col, row_start, col)
 
 
 def main_loop():
