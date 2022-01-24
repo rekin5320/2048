@@ -6,6 +6,7 @@ import random
 
 class Colors:
     background = (250, 248, 239)
+    board_background = (187, 173, 160)
     cell = {
         0: (205, 193, 180),
         2: (238, 228, 218),
@@ -62,12 +63,12 @@ class RoundedSquare:
 class Cell:
     def __init__(self, value):
         self.value = value
-        self.tile = RoundedSquare(G.cell_size, G.radius, Colors.cell[value])
+        self.tile = RoundedSquare(G.cell_size - 2 * G.grid_spacing, G.radius, Colors.cell[value])
         if value:
             self.text = Text(str(value), Colors.font[value])
 
     def draw(self, x_real, y_real):
-        self.tile.draw(x_real, y_real)
+        self.tile.draw(x_real + G.grid_spacing, y_real + G.grid_spacing)
         if self.value:
             self.text.draw(x_real + (G.cell_size - self.text.text_width) / 2, y_real + (G.cell_size - self.text.text_height) / 2)
 
@@ -91,7 +92,8 @@ class Animation:
 
 class Game:
     cell_size = 100
-    radius = 17
+    radius = 9
+    grid_spacing = 5
     fps = 60
     move_time = 50
     values = [0] + [2 ** i for i in range(1, 10 + 1)]
@@ -159,7 +161,7 @@ class Game:
             self.redraw()
 
     def redraw(self):
-        G.window.fill(Colors.background)
+        G.window.fill(Colors.board_background)
 
         for row, row_of_cells in enumerate(self.M):
             for col, val in enumerate(row_of_cells):
