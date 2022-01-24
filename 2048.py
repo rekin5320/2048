@@ -33,12 +33,12 @@ def merge_cells(row_absorbent, col_absorbent, row_absorbed, col_absorbed):
 def find_maximum_movement(row_start, col_start, dir_x, dir_y):
     if dir_x != 0:  # x direction
         col_end = col_start + dir_x
-        while 0 < col_end < 3 and ((not Matrix[row_start][col_end + dir_x]) or Matrix[row_start][col_start] == Matrix[row_start][col_end + dir_x]):
+        while 0 < col_end < 3 and not Matrix[row_start][col_end] and ((not Matrix[row_start][col_end + dir_x]) or Matrix[row_start][col_start] == Matrix[row_start][col_end + dir_x]):
             col_end += dir_x
         return col_end
     else:  # y direction
         row_end = row_start + dir_y
-        while 0 < row_end < 3 and ((not Matrix[row_end + dir_y][col_start]) or Matrix[row_start][col_start] == Matrix[row_end + dir_y][col_start]):
+        while 0 < row_end < 3 and not Matrix[row_end][col_start] and ((not Matrix[row_end + dir_y][col_start]) or Matrix[row_start][col_start] == Matrix[row_end + dir_y][col_start]):
             row_end += dir_y
         return row_end
 
