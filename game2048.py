@@ -82,6 +82,9 @@ class Game:
     animations_to_do = {}
 
     def __init__(self):
+        pass
+
+    def init_graphics(self):
         pygame.display.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
@@ -206,6 +209,7 @@ class Game:
         return moved
 
 
+G = Game()
 if __name__ == "__main__":
-    G = Game()
+    G.init_graphics()
     G.start()
