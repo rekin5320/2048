@@ -20,10 +20,10 @@ class Cell:
         if value:
             self.text = Text(str(value), font_colors[value])
 
-    def draw(self, row, col):
-        pygame.draw.rect(window, self.color, (col * cell_size, row * cell_size, cell_size, cell_size))
+    def draw(self, x_real, y_real):
+        pygame.draw.rect(window, self.color, (x_real, y_real, cell_size, cell_size))
         if self.value:
-            self.text.draw(col * cell_size + (cell_size - self.text.text_width) / 2, row * cell_size + (cell_size - self.text.text_height) / 2)
+            self.text.draw(x_real + (cell_size - self.text.text_width) / 2, y_real + (cell_size - self.text.text_height) / 2)
 
 
 def merge_cells(row_absorbent, col_absorbent, row_absorbed, col_absorbed):
@@ -50,6 +50,24 @@ def spawn_cell():
     Matrix[row][col] = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 4])
 
 
+class Animation:
+    def __init__(self, row_start, col_start, row_end, col_end, val):
+        self.val = val
+        self.move_distance_x = (col_end - col_start) * cell_size
+        self.move_distance_y = (row_end - row_start) * cell_size
+        self.move_step_x = self.move_distance_x // move_time
+        self.move_step_y = self.move_distance_y // move_time
+        self.start_pos_x = col_start * cell_size
+        self.start_pos_y = row_start * cell_size
+
+    def draw(self):
+        global move_time_remaining
+        pos_now_x = self.start_pos_x + self.move_step_x * (move_time - move_time_remaining)
+        pos_now_y = self.start_pos_y + self.move_step_y * (move_time - move_time_remaining)
+
+        CellsPrerendered[self.val].draw(pos_now_x, pos_now_y)
+
+
 def move_cells(dir_x, dir_y):
     moved = False
     if dir_x != 0:  # x direction
@@ -61,6 +79,7 @@ def move_cells(dir_x, dir_y):
                         Matrix[row][col_end] = Matrix[row][col_start]
                         Matrix[row][col_start] = 0
                         moved = True
+                        animations_to_do[(row, col_end)] = Animation(row, col_start, row, col_end, Matrix[row][col_end])
                     elif Matrix[row][col_start] == Matrix[row][col_end]:
                         merge_cells(row, col_end, row, col_start)
                         moved = True
@@ -73,6 +92,7 @@ def move_cells(dir_x, dir_y):
                         Matrix[row_end][col] = Matrix[row_start][col]
                         Matrix[row_start][col] = 0
                         moved = True
+                        animations_to_do[(row_end, col)] = Animation(row_start, col, row_end, col, Matrix[row_end][col])
                     elif Matrix[row_start][col] == Matrix[row_end][col]:
                         merge_cells(row_end, col, row_start, col)
                         moved = True
@@ -80,6 +100,7 @@ def move_cells(dir_x, dir_y):
 
 
 def main_loop():
+    global move_time_remaining
     game_notOver = True
     move_time_remaining = 0
     dir_x, dir_y = 0, 0
@@ -122,18 +143,29 @@ def main_loop():
 
 
 def redraw():
+    global animations_to_do
     window.fill((250, 248, 239))
 
     for row, row_of_cells in enumerate(Matrix):
         for col, val in enumerate(row_of_cells):
-            CellsPrerendered[val].draw(row, col)
+            if (row, col) in animations_to_do:
+                # draw empty cell
+                CellsPrerendered[0].draw(col * cell_size, row * cell_size)
+            else:
+                CellsPrerendered[val].draw(col * cell_size, row * cell_size)
+
+    for key, anim in animations_to_do.items():
+        anim.draw()
+    if move_time_remaining == 0:
+        animations_to_do = {}
 
     pygame.display.update()
 
 
 cell_size = 100
 fps = 60
-move_time = fps * 1
+move_time = 100
+animations_to_do = {}
 
 values = [0] + [2 ** i for i in range(1, 10 + 1)]
 
