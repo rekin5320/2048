@@ -44,15 +44,30 @@ class Text:
         G.window.blit(self.text, (x, y))
 
 
+class RoundedSquare:
+    def __init__(self, a, r, color):
+        self.a = a
+        self.r = r
+        self.color = color
+
+    def draw(self, x, y):
+        pygame.draw.rect(G.window, self.color, (x + self.r, y, self.a - 2 * self.r, self.a))
+        pygame.draw.rect(G.window, self.color, (x, y + self.r, self.a, self.a - 2 * self.r))
+        pygame.draw.circle(G.window, self.color, (x + self.r, y + self.r), self.r)
+        pygame.draw.circle(G.window, self.color, (x + self.a - self.r, y + self.r), self.r)
+        pygame.draw.circle(G.window, self.color, (x + self.a - self.r, y + self.a - self.r), self.r)
+        pygame.draw.circle(G.window, self.color, (x + self.r, y + self.a - self.r), self.r)
+
+
 class Cell:
     def __init__(self, value):
         self.value = value
-        self.color = Colors.cell[value]
+        self.tile = RoundedSquare(G.cell_size, G.radius, Colors.cell[value])
         if value:
             self.text = Text(str(value), Colors.font[value])
 
     def draw(self, x_real, y_real):
-        pygame.draw.rect(G.window, self.color, (x_real, y_real, G.cell_size, G.cell_size))
+        self.tile.draw(x_real, y_real)
         if self.value:
             self.text.draw(x_real + (G.cell_size - self.text.text_width) / 2, y_real + (G.cell_size - self.text.text_height) / 2)
 
@@ -76,6 +91,7 @@ class Animation:
 
 class Game:
     cell_size = 100
+    radius = 17
     fps = 60
     move_time = 50
     values = [0] + [2 ** i for i in range(1, 10 + 1)]
