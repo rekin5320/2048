@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import pygame
+import random
 
 
 class Text:
@@ -43,29 +44,39 @@ def find_maximum_movement(row_start, col_start, dir_x, dir_y):
         return row_end
 
 
+def spawn_cell():
+    free_tiles = [(row, col) for row, row_of_cells in enumerate(Matrix) for col, val in enumerate(row_of_cells) if not val]
+    row, col = random.choice(free_tiles)
+    Matrix[row][col] = 2
+
+
 def move_cells(dir_x, dir_y):
+    moved = False
     if dir_x != 0:  # x direction
         for row in range(0, 4):
             for col_start in (range(2, -1, -1) if dir_x > 0 else range(0, 4)):
-                if not ((col_start == 0 and dir_x < 0) or (col_start == 3 and dir_x > 0)):
+                if Matrix[row][col_start] and not ((col_start == 0 and dir_x < 0) or (col_start == 3 and dir_x > 0)):
                     col_end = find_maximum_movement(row, col_start, dir_x, dir_y)
-                    if col_start != col_end:
-                        if not Matrix[row][col_end]:  # is empty
-                            Matrix[row][col_end] = Matrix[row][col_start]
-                            Matrix[row][col_start] = 0
-                        elif Matrix[row][col_start] == Matrix[row][col_end]:
-                            merge_cells(row, col_end, row, col_start)
+                    if not Matrix[row][col_end]:  # is empty
+                        Matrix[row][col_end] = Matrix[row][col_start]
+                        Matrix[row][col_start] = 0
+                        moved = True
+                    elif Matrix[row][col_start] == Matrix[row][col_end]:
+                        merge_cells(row, col_end, row, col_start)
+                        moved = True
     else:  # y direction
         for col in range(0, 4):
             for row_start in (range(2, -1, -1) if dir_y > 0 else range(0, 4)):
-                if not ((row_start == 0 and dir_y < 0) or (row_start == 3 and dir_y > 0)):
+                if Matrix[row_start][col] and not ((row_start == 0 and dir_y < 0) or (row_start == 3 and dir_y > 0)):
                     row_end = find_maximum_movement(row_start, col, dir_x, dir_y)
-                    if row_start != row_end:
-                        if not Matrix[row_end][col]:  # is empty
-                            Matrix[row_end][col] = Matrix[row_start][col]
-                            Matrix[row_start][col] = 0
-                        elif Matrix[row_start][col] == Matrix[row_end][col]:
-                            merge_cells(row_end, col, row_start, col)
+                    if not Matrix[row_end][col]:  # is empty
+                        Matrix[row_end][col] = Matrix[row_start][col]
+                        Matrix[row_start][col] = 0
+                        moved = True
+                    elif Matrix[row_start][col] == Matrix[row_end][col]:
+                        merge_cells(row_end, col, row_start, col)
+                        moved = True
+    return moved
 
 
 def main_loop():
@@ -101,7 +112,9 @@ def main_loop():
                 dir_y = 1
 
             if move_time_remaining:
-                move_cells(dir_x, dir_y)
+                moved = move_cells(dir_x, dir_y)
+                if moved:
+                    spawn_cell()
         else:
             move_time_remaining -= 1
 
