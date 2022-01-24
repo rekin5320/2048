@@ -89,7 +89,7 @@ class Game:
         pygame.font.init()
         self.clock = pygame.time.Clock()
         self.window = pygame.display.set_mode((4 * self.cell_size, 4 * self.cell_size))
-        self.font = pygame.font.SysFont("Verdana", 40, bold=True)
+        self.font = pygame.font.Font("OpenSans-Bold.ttf", 45)
 
     def start(self):
         self.CellsPrerendered = {i: Cell(i) for i in self.values}
