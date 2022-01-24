@@ -122,7 +122,7 @@ cell_size = 100
 fps = 60
 move_time = fps * 1
 
-values = [0] + [2 ** i for i in range(1, 7 + 1)]
+values = [0] + [2 ** i for i in range(1, 10 + 1)]
 
 cell_colors = {
     0: (205, 193, 180),
