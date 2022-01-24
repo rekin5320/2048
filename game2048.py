@@ -91,11 +91,11 @@ class Animation:
 
 
 class Game:
-    cell_size = 100
+    cell_size = 120
     radius = 9
-    grid_spacing = 5
+    grid_spacing = 6
     fps = 60
-    move_time = 50
+    move_time = 20
     values = [0] + [2 ** i for i in range(1, 10 + 1)]
     animations = {}
 
@@ -108,7 +108,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.window = pygame.display.set_mode((4 * self.cell_size, 4 * self.cell_size))
         pygame.display.set_caption("2048")
-        self.font = pygame.font.Font("OpenSans-Bold.ttf", 45)
+        self.font = pygame.font.Font("OpenSans-Bold.ttf", 52)
 
     def start(self):
         self.CellsPrerendered = {i: Cell(i) for i in self.values}
