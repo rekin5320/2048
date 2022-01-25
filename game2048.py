@@ -100,22 +100,18 @@ class Game:
     animations = {}
 
     def __init__(self):
-        pass
+        self.M = [[0, 0, 0, 0] for _ in range(4)]  # Matrix
+        self.spawn_cell()
+        self.spawn_cell()
 
-    def init_graphics(self):
+    def start(self):
         pygame.display.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
         self.window = pygame.display.set_mode((4 * self.cell_size, 4 * self.cell_size))
         pygame.display.set_caption("2048")
         self.font = pygame.font.Font("OpenSans-Bold.ttf", 52)
-
-    def start(self):
         self.CellsPrerendered = {i: Cell(i) for i in self.values}
-
-        self.M = [[0, 0, 0, 0] for _ in range(4)]  # Matrix
-        self.spawn_cell()
-        self.spawn_cell()
 
         self.main_loop()
 
@@ -230,5 +226,4 @@ class Game:
 
 G = Game()
 if __name__ == "__main__":
-    G.init_graphics()
     G.start()
