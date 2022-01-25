@@ -96,7 +96,7 @@ class Game:
     grid_spacing = 6
     fps = 60
     move_time = 20
-    values = [0] + [2 ** i for i in range(1, 10 + 1)]
+    values = [0] + [2 ** i for i in range(1, 11 + 1)]
     animations = {}
 
     def __init__(self):
