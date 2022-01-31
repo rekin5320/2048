@@ -89,6 +89,8 @@ class Animation:
 
         G.CellsPrerendered[self.val].draw(pos_now_x, pos_now_y)
 
+    def __repr__(self):
+        return f"Anim(start=({self.start_pos_y // G.cell_size}, {self.start_pos_y // G.cell_size}, dist=({self.move_distance_y // G.cell_size}, {self.move_distance_x // G.cell_size}))"
 
 class Game:
     cell_size = 120
@@ -166,8 +168,9 @@ class Game:
                 else:
                     G.CellsPrerendered[val].draw(col * G.cell_size, row * G.cell_size)
 
-        for anim in self.animations.values():
-            anim.draw()
+        for cell in self.animations.values():
+            for anim in cell:
+                anim.draw()
 
         pygame.display.update()
 
@@ -177,15 +180,23 @@ class Game:
         row, col = random.choice(free_tiles)
         self.M[row][col] = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 4])
 
+    def add_animation(self, row_start, col_start, row_end, col_end, value):
+        if (row_end, col_end) not in self.animations:
+            self.animations[(row_end, col_end)] = []
+        self.animations[(row_end, col_end)].append(Animation(row_start, col_start, row_end, col_end, value))
+
     def move_cell(self, row_start, col_start, row_end, col_end):
-        self.animations[(row_end, col_end)] = Animation(row_start, col_start, row_end, col_end, self.M[row_start][col_start])
+        self.add_animation(row_start, col_start, row_end, col_end, self.M[row_start][col_start])
         self.M[row_end][col_end] = self.M[row_start][col_start]
         self.M[row_start][col_start] = 0
 
     def merge_cells(self, row_absorbent, col_absorbent, row_absorbed, col_absorbed):
-        self.animations[(row_absorbed, col_absorbed)] = Animation(row_absorbed, col_absorbed, row_absorbent, col_absorbent, self.M[row_absorbent][col_absorbent])
-        if (row_absorbent, col_absorbent) not in self.animations:  # absorbent is on edge
-            self.animations[(row_absorbent, col_absorbent)] = Animation(row_absorbent, col_absorbent, row_absorbent, col_absorbent, self.M[row_absorbent][col_absorbent])
+        # ↓ absorbent animation, check if absorbent is not already being moved
+        if (row_absorbent, col_absorbent) not in self.animations:
+            self.add_animation(row_absorbent, col_absorbent, row_absorbent, col_absorbent, self.M[row_absorbent][col_absorbent])
+        # ↓ absorbed animation
+        self.add_animation(row_absorbed, col_absorbed, row_absorbent, col_absorbent, self.M[row_absorbed][col_absorbed])
+
         self.M[row_absorbent][col_absorbent] *= 2
         self.M[row_absorbed][col_absorbed] = 0
         self.no_longer_mergeable.add((row_absorbent, col_absorbent))
@@ -198,7 +209,7 @@ class Game:
             return col_end
         else:  # y direction
             row_end = row_start + dir_y
-            while 0 < row_end < 3 and not self.M[row_end][col_start] and (not self.M[row_end + dir_y][col_start] or self.M[row_start][col_start] == self.M[row_end + dir_y][col_start]) and (row_end, col_start) not in self.no_longer_mergeable:
+            while 0 < row_end < 3 and not self.M[row_end][col_start] and (not self.M[row_end + dir_y][col_start] or self.M[row_start][col_start] == self.M[row_end + dir_y][col_start]) and (row_end + dir_y, col_start) not in self.no_longer_mergeable:
                 row_end += dir_y
             return row_end
 

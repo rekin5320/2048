@@ -59,3 +59,28 @@ class TestMoving(unittest.TestCase):
         self.assertEqual([[0, 0, 0, 0], [0, 0, 0, 0], [32, 0, 0, 8], [32, 0, 0, 8]], G.M)
         G.move_matrix(0, -1)
         self.assertEqual([[64, 0, 0, 16], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], G.M)
+
+    def test_7(self):
+        G.M = [[2, 0, 0, 0], [2, 0, 0, 0], [4, 0, 0, 0], [4, 0, 0, 0]]
+        G.move_matrix(0, -1)
+        self.assertEqual([[4, 0, 0, 0], [8, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], G.M)
+
+    def test_8(self):
+        G.M = self.M = [[4, 0, 0, 0], [4, 0, 0, 0], [2, 0, 0, 0], [2, 0, 0, 0]]
+        G.move_matrix(0, 1)
+        self.assertEqual([[0, 0, 0, 0], [0, 0, 0, 0], [8, 0, 0, 0], [4, 0, 0, 0]], G.M)
+
+    def test_9(self):
+        G.M = self.M = [[4, 0, 0, 0], [4, 0, 0, 0], [2, 0, 0, 0], [2, 0, 0, 0]]
+        G.move_matrix(0, -1)
+        self.assertEqual([[8, 0, 0, 0], [4, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], G.M)
+
+    def test_10(self):
+        G.M = self.M = self.M = [[4, 4, 2, 2], [0, 0, 0, 0], [4, 4, 2, 2], [0, 0, 0, 0]]
+        G.move_matrix(1, 0)
+        self.assertEqual([[0, 0, 8, 4], [0, 0, 0, 0], [0, 0, 8, 4], [0, 0, 0, 0]], G.M)
+
+    def test_11(self):
+        G.M = [[8, 8, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+        G.move_matrix(1, 0)
+        self.assertEqual([[0, 0, 0, 16], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], G.M)
