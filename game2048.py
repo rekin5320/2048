@@ -93,6 +93,7 @@ class Animation:
         return f"Anim(start=({self.start_pos_y // G.cell_size}, {self.start_pos_y // G.cell_size}, dist=({self.move_distance_y // G.cell_size}, {self.move_distance_x // G.cell_size}))"
 
 class Game:
+    size = 4
     cell_size = 120
     radius = 9
     grid_spacing = 6
@@ -102,7 +103,7 @@ class Game:
     animations = {}
 
     def __init__(self):
-        self.M = [[0, 0, 0, 0] for _ in range(4)]  # Matrix
+        self.M = [[0 for _ in range(self.size)] for _ in range(self.size)]  # Matrix
         self.spawn_cell()
         self.spawn_cell()
 
@@ -110,7 +111,7 @@ class Game:
         pygame.display.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
-        self.window = pygame.display.set_mode((4 * self.cell_size, 4 * self.cell_size))
+        self.window = pygame.display.set_mode((self.size * self.cell_size, self.size * self.cell_size))
         pygame.display.set_caption("2048")
         self.font = pygame.font.Font("OpenSans-Bold.ttf", 52)
         self.CellsPrerendered = {i: Cell(i) for i in self.values}
@@ -164,9 +165,9 @@ class Game:
         for row, row_of_cells in enumerate(self.M):
             for col, val in enumerate(row_of_cells):
                 if (row, col) in self.animations:
-                    G.CellsPrerendered[0].draw(col * G.cell_size, row * G.cell_size)
+                    G.CellsPrerendered[0].draw(col * self.cell_size, row * self.cell_size)
                 else:
-                    G.CellsPrerendered[val].draw(col * G.cell_size, row * G.cell_size)
+                    G.CellsPrerendered[val].draw(col * self.cell_size, row * self.cell_size)
 
         for cell in self.animations.values():
             for anim in cell:
@@ -204,30 +205,30 @@ class Game:
     def find_maximum_movement(self, row_start, col_start, dir_x, dir_y):
         if dir_x != 0:  # x direction
             col_end = col_start + dir_x
-            while 0 < col_end < 3 and not self.M[row_start][col_end] and (not self.M[row_start][col_end + dir_x] or self.M[row_start][col_start] == self.M[row_start][col_end + dir_x]) and (row_start, col_end + dir_x) not in self.no_longer_mergeable:
+            while 0 < col_end < self.size - 1 and not self.M[row_start][col_end] and (not self.M[row_start][col_end + dir_x] or self.M[row_start][col_start] == self.M[row_start][col_end + dir_x]) and (row_start, col_end + dir_x) not in self.no_longer_mergeable:
                 col_end += dir_x
             return col_end
         else:  # y direction
             row_end = row_start + dir_y
-            while 0 < row_end < 3 and not self.M[row_end][col_start] and (not self.M[row_end + dir_y][col_start] or self.M[row_start][col_start] == self.M[row_end + dir_y][col_start]) and (row_end + dir_y, col_start) not in self.no_longer_mergeable:
+            while 0 < row_end < self.size - 1 and not self.M[row_end][col_start] and (not self.M[row_end + dir_y][col_start] or self.M[row_start][col_start] == self.M[row_end + dir_y][col_start]) and (row_end + dir_y, col_start) not in self.no_longer_mergeable:
                 row_end += dir_y
             return row_end
 
     def move_matrix(self, dir_x, dir_y):
         self.no_longer_mergeable = set()
         if dir_x != 0:  # x direction
-            for row in range(0, 4):
-                for col_start in (range(2, -1, -1) if dir_x > 0 else range(0, 4)):
-                    if self.M[row][col_start] and not ((col_start == 0 and dir_x < 0) or (col_start == 3 and dir_x > 0)):
+            for row in range(0, self.size):
+                for col_start in (range(self.size - 2, -1, -1) if dir_x > 0 else range(0, self.size)):
+                    if self.M[row][col_start] and not ((col_start == 0 and dir_x < 0) or (col_start == self.size - 1 and dir_x > 0)):
                         col_end = self.find_maximum_movement(row, col_start, dir_x, dir_y)
                         if not self.M[row][col_end]:
                             self.move_cell(row, col_start, row, col_end)
                         elif self.M[row][col_start] == self.M[row][col_end] and (row, col_end) not in self.no_longer_mergeable:
                             self.merge_cells(row, col_end, row, col_start)
         else:  # y direction
-            for col in range(0, 4):
-                for row_start in (range(2, -1, -1) if dir_y > 0 else range(0, 4)):
-                    if self.M[row_start][col] and not ((row_start == 0 and dir_y < 0) or (row_start == 3 and dir_y > 0)):
+            for col in range(0, self.size):
+                for row_start in (range(self.size - 2, -1, -1) if dir_y > 0 else range(0, self.size)):
+                    if self.M[row_start][col] and not ((row_start == 0 and dir_y < 0) or (row_start == self.size - 1 and dir_y > 0)):
                         row_end = self.find_maximum_movement(row_start, col, dir_x, dir_y)
                         if not self.M[row_end][col]:
                             self.move_cell(row_start, col, row_end, col)

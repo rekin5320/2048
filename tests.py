@@ -2,7 +2,9 @@ import unittest
 
 import game2048
 
+
 G = game2048.G
+G.size = 4
 
 
 class TestMoving(unittest.TestCase):
