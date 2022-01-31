@@ -74,8 +74,12 @@ class Cell:
 
 
 class Animation:
-    def __init__(self, row_start, col_start, row_end, col_end, val):
-        self.val = val
+    def __init__(self, row_start, col_start, row_end, col_end, value):
+        self.value = value
+        self.row_start = row_start
+        self.col_start = col_start
+        self.row_end = row_end
+        self.col_end = col_end
         self.move_distance_x = (col_end - col_start) * G.cell_size
         self.move_distance_y = (row_end - row_start) * G.cell_size
         self.move_step_x = self.move_distance_x // G.move_time
@@ -87,10 +91,11 @@ class Animation:
         pos_now_x = self.start_pos_x + self.move_step_x * (G.move_time - G.move_time_remaining)
         pos_now_y = self.start_pos_y + self.move_step_y * (G.move_time - G.move_time_remaining)
 
-        G.CellsPrerendered[self.val].draw(pos_now_x, pos_now_y)
+        G.CellsPrerendered[self.value].draw(pos_now_x, pos_now_y)
 
     def __repr__(self):
-        return f"Anim(start=({self.start_pos_y // G.cell_size}, {self.start_pos_y // G.cell_size}, dist=({self.move_distance_y // G.cell_size}, {self.move_distance_x // G.cell_size}))"
+        return f"Anim(start=({self.row_start}, {self.col_start}, dist=({self.col_end - self.col_start}, {self.row_end - self.row_start}))"
+
 
 class Game:
     size = 4
@@ -128,7 +133,7 @@ class Game:
             self.clock.tick(self.fps)
 
             keys = pygame.key.get_pressed()
-            mouse = pygame.mouse.get_pos()
+            # mouse = pygame.mouse.get_pos()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
@@ -176,8 +181,7 @@ class Game:
         pygame.display.update()
 
     def spawn_cell(self):
-        free_tiles = [(row, col) for row, row_of_cells in enumerate(self.M) for col, val in enumerate(row_of_cells)
-                      if not val]
+        free_tiles = [(row, col) for row, row_of_cells in enumerate(self.M) for col, val in enumerate(row_of_cells) if val == 0]
         row, col = random.choice(free_tiles)
         self.M[row][col] = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 4])
 
@@ -205,12 +209,12 @@ class Game:
     def find_maximum_movement(self, row_start, col_start, dir_x, dir_y):
         if dir_x != 0:  # x direction
             col_end = col_start + dir_x
-            while 0 < col_end < self.size - 1 and not self.M[row_start][col_end] and (not self.M[row_start][col_end + dir_x] or self.M[row_start][col_start] == self.M[row_start][col_end + dir_x]) and (row_start, col_end + dir_x) not in self.no_longer_mergeable:
+            while 0 < col_end < self.size - 1 and self.M[row_start][col_end] == 0 and (self.M[row_start][col_end + dir_x] == 0 or self.M[row_start][col_start] == self.M[row_start][col_end + dir_x]) and (row_start, col_end + dir_x) not in self.no_longer_mergeable:
                 col_end += dir_x
             return col_end
         else:  # y direction
             row_end = row_start + dir_y
-            while 0 < row_end < self.size - 1 and not self.M[row_end][col_start] and (not self.M[row_end + dir_y][col_start] or self.M[row_start][col_start] == self.M[row_end + dir_y][col_start]) and (row_end + dir_y, col_start) not in self.no_longer_mergeable:
+            while 0 < row_end < self.size - 1 and self.M[row_end][col_start] == 0 and (self.M[row_end + dir_y][col_start] == 0 or self.M[row_start][col_start] == self.M[row_end + dir_y][col_start]) and (row_end + dir_y, col_start) not in self.no_longer_mergeable:
                 row_end += dir_y
             return row_end
 
@@ -221,7 +225,7 @@ class Game:
                 for col_start in (range(self.size - 2, -1, -1) if dir_x > 0 else range(0, self.size)):
                     if self.M[row][col_start] and not ((col_start == 0 and dir_x < 0) or (col_start == self.size - 1 and dir_x > 0)):
                         col_end = self.find_maximum_movement(row, col_start, dir_x, dir_y)
-                        if not self.M[row][col_end]:
+                        if self.M[row][col_end] == 0:
                             self.move_cell(row, col_start, row, col_end)
                         elif self.M[row][col_start] == self.M[row][col_end] and (row, col_end) not in self.no_longer_mergeable:
                             self.merge_cells(row, col_end, row, col_start)
@@ -230,7 +234,7 @@ class Game:
                 for row_start in (range(self.size - 2, -1, -1) if dir_y > 0 else range(0, self.size)):
                     if self.M[row_start][col] and not ((row_start == 0 and dir_y < 0) or (row_start == self.size - 1 and dir_y > 0)):
                         row_end = self.find_maximum_movement(row_start, col, dir_x, dir_y)
-                        if not self.M[row_end][col]:
+                        if self.M[row_end][col] == 0:
                             self.move_cell(row_start, col, row_end, col)
                         elif self.M[row_start][col] == self.M[row_end][col] and (row_end, col) not in self.no_longer_mergeable:
                             self.merge_cells(row_end, col, row_start, col)
