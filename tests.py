@@ -4,6 +4,7 @@ import game2048
 
 
 G = game2048.G
+G.debug_headless = True
 G.size = 4
 
 
@@ -78,11 +79,16 @@ class TestMoving(unittest.TestCase):
         self.assertEqual([[8, 0, 0, 0], [4, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], G.M)
 
     def test_10(self):
-        G.M = self.M = self.M = [[4, 4, 2, 2], [0, 0, 0, 0], [4, 4, 2, 2], [0, 0, 0, 0]]
+        G.M = self.M = self.M = [[4, 4, 2, 2], [0, 0, 0, 0], [2, 2, 4, 4], [0, 0, 0, 0]]
         G.move_matrix(1, 0)
-        self.assertEqual([[0, 0, 8, 4], [0, 0, 0, 0], [0, 0, 8, 4], [0, 0, 0, 0]], G.M)
+        self.assertEqual([[0, 0, 8, 4], [0, 0, 0, 0], [0, 0, 4, 8], [0, 0, 0, 0]], G.M)
 
     def test_11(self):
+        G.M = self.M = self.M = [[4, 4, 2, 2], [0, 0, 0, 0], [2, 2, 4, 4], [0, 0, 0, 0]]
+        G.move_matrix(-1, 0)
+        self.assertEqual([[8, 4, 0, 0], [0, 0, 0, 0], [4, 8, 0, 0], [0, 0, 0, 0]], G.M)
+
+    def test_12(self):
         G.M = [[8, 8, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
         G.move_matrix(1, 0)
         self.assertEqual([[0, 0, 0, 16], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], G.M)
