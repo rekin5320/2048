@@ -150,13 +150,13 @@ class Game:
                     self.spawn_cell()
 
                 pressed_key = True
-                if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                if keys[pygame.K_LEFT] or keys[pygame.K_a]:  # ←
                     dir_x, dir_y = -1, 0
-                elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:  # →
                     dir_x, dir_y = 1, 0
-                elif keys[pygame.K_UP] or keys[pygame.K_w]:
+                elif keys[pygame.K_UP] or keys[pygame.K_w]:  # ↑
                     dir_x, dir_y = 0, -1
-                elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                elif keys[pygame.K_DOWN] or keys[pygame.K_s]:  # ↓
                     dir_x, dir_y = 0, 1
                 else:
                     pressed_key = False
