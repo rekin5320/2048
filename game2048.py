@@ -113,10 +113,11 @@ class Game:
         self.M = [[0 for _ in range(self.size)] for _ in range(self.size)]  # Matrix
         self.spawn_cell()
         self.spawn_cell()
+        self.reset_animations()
 
     def start(self):
         self.move_time = 60 if self.debug_anim else 20
-        self.animations = {}
+        self.reset_animations()
         pygame.display.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
@@ -144,8 +145,8 @@ class Game:
                     self.game_notOver = False
 
             if self.move_time_remaining == 0:
-                if self.animations:  # something has moved
-                    self.animations = {}
+                if self.cells_being_animated:  # something has moved
+                    self.reset_animations()
                     self.spawn_cell()
 
                 pressed_key = True
@@ -177,14 +178,13 @@ class Game:
 
         for row, row_of_cells in enumerate(self.M):
             for col, val in enumerate(row_of_cells):
-                if (row, col) in self.animations:
+                if (row, col) in self.cells_being_animated:
                     G.CellsPrerendered[0].draw(col * self.cell_size, row * self.cell_size)
                 else:
                     G.CellsPrerendered[val].draw(col * self.cell_size, row * self.cell_size)
 
-        for cell in self.animations.values():
-            for anim in cell:
-                anim.draw()
+        for anim in self.animations:
+            anim.draw()
 
         pygame.display.update()
 
@@ -194,11 +194,14 @@ class Game:
             row, col = random.choice(free_tiles)
             self.M[row][col] = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 4])
 
+    def reset_animations(self):
+        self.animations = set()
+        self.cells_being_animated = set()
+
     def add_animation(self, row_start, col_start, row_end, col_end, value):
         if not self.debug_headless:
-            if (row_end, col_end) not in self.animations:
-                self.animations[(row_end, col_end)] = []
-            self.animations[(row_end, col_end)].append(Animation(row_start, col_start, row_end, col_end, value))
+            self.animations.add(Animation(row_start, col_start, row_end, col_end, value))
+            self.cells_being_animated.add((row_end, col_end))
 
     def move_cell(self, row_start, col_start, row_end, col_end):
         self.add_animation(row_start, col_start, row_end, col_end, self.M[row_start][col_start])
@@ -208,7 +211,7 @@ class Game:
     def merge_cells(self, row_absorbent, col_absorbent, row_absorbed, col_absorbed):
         if not self.debug_headless:
             # ↓ absorbent animation, check if absorbent is not already being moved
-            if (row_absorbent, col_absorbent) not in self.animations:
+            if (row_absorbent, col_absorbent) not in self.cells_being_animated:
                 self.add_animation(row_absorbent, col_absorbent, row_absorbent, col_absorbent, self.M[row_absorbent][col_absorbent])
             # ↓ absorbed animation
             self.add_animation(row_absorbed, col_absorbed, row_absorbent, col_absorbent, self.M[row_absorbed][col_absorbed])
