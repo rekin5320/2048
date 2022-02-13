@@ -121,7 +121,7 @@ class Game:
         pygame.display.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
-        self.window = pygame.display.set_mode((self.size * self.cell_size, self.size * self.cell_size))
+        self.window = pygame.display.set_mode((self.size * self.cell_size, self.size * self.cell_size), vsync=1)
         pygame.display.set_caption("2048")
         self.font = pygame.font.Font("OpenSans-Bold.ttf", 52)
         self.CellsPrerendered = {i: Cell(i) for i in self.values}
