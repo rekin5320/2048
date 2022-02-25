@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import pygame
 import random
 
@@ -253,6 +254,8 @@ class Game:
                         elif self.M[row_start][col] == self.M[row_end][col] and (row_end, col) not in self.no_longer_mergeable:
                             self.merge_cells(row_end, col, row_start, col)
 
+
+os.chdir(os.path.dirname(__file__))
 
 G = Game()
 if __name__ == "__main__":
