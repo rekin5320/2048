@@ -109,6 +109,7 @@ class Game:
     grid_spacing = 6
     fps = 60
     values = [0] + [2 ** i for i in range(1, 11 + 1)]
+    score = 0
 
     def __init__(self):
         self.M = [[0 for _ in range(self.size)] for _ in range(self.size)]  # Matrix
@@ -220,6 +221,9 @@ class Game:
         self.M[row_absorbent][col_absorbent] *= 2
         self.M[row_absorbed][col_absorbed] = 0
         self.no_longer_mergeable.add((row_absorbent, col_absorbent))
+
+        self.score += self.M[row_absorbent][col_absorbent]
+        print(self.score)
 
     def find_maximum_movement(self, row_start, col_start, dir_x, dir_y):
         if dir_x != 0:  # x direction
