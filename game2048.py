@@ -170,7 +170,9 @@ class Game:
                     # things to be done when move ends
                     self.reset_animations()
                     self.spawn_cell()
-                    self.score = self.new_score
+                    if self.score != self.new_score:
+                        self.score = self.new_score
+                        print(self.score)
 
                 pressed_key = True
                 if keys[pygame.K_LEFT] or keys[pygame.K_a]:  # ←
