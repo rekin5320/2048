@@ -35,12 +35,15 @@ class Colors:
         1024: (249, 246, 242),
         2048: (249, 246, 242),
     }
+    header = (238, 228, 218)
+    header_font = (119, 110, 101)
 
 
 class Text:
-    def __init__(self, text, color):
-        self.text_width, self.text_height = G.font.size(text)
-        self.text = G.font.render(text, True, color)
+    def __init__(self, text, color, size):
+        self.font = pygame.font.Font("OpenSans-Bold.ttf", size)
+        self.text_width, self.text_height = self.font.size(text)
+        self.text = self.font.render(text, True, color)
 
     def draw(self, x, y):
         G.window.blit(self.text, (x, y))
@@ -62,16 +65,18 @@ class RoundedSquare:
 
 
 class Cell:
+    font_size = 52
+
     def __init__(self, value):
         self.value = value
         self.tile = RoundedSquare(G.cell_size - 2 * G.grid_spacing, G.radius, Colors.cell[value])
         if value:
-            self.text = Text(str(value), Colors.font[value])
+            self.text = Text(str(value), Colors.font[value], self.font_size)
 
     def draw(self, x_real, y_real):
-        self.tile.draw(x_real + G.grid_spacing, y_real + G.grid_spacing)
+        self.tile.draw(x_real + G.grid_spacing, y_real + G.grid_spacing + H.height)
         if self.value:
-            self.text.draw(x_real + (G.cell_size - self.text.text_width) / 2, y_real + (G.cell_size - self.text.text_height) / 2)
+            self.text.draw(x_real + (G.cell_size - self.text.text_width) / 2, y_real + (G.cell_size - self.text.text_height) / 2 + H.height)
 
 
 class Animation:
@@ -98,6 +103,19 @@ class Animation:
         return f"Anim(start=({self.row_start}, {self.col_start}, dist=({self.col_end - self.col_start}, {self.row_end - self.row_start}))"
 
 
+class Header:
+    height = 80
+    font_size = 39
+
+    def __init__(self):
+        pass
+
+    def draw(self):
+        pygame.draw.rect(G.window, Colors.header, (0, 0, G.dim, self.height))
+        text = Text(f"score: {G.score}", Colors.header_font, self.font_size)
+        text.draw((G.dim - text.text_width) // 2, (H.height - text.text_height) // 2)
+
+
 class Game:
     debug_headless = False
     debug_anim = False
@@ -105,11 +123,13 @@ class Game:
 
     size = 4
     cell_size = 120
+    dim = size * cell_size
     radius = 9
     grid_spacing = 6
     fps = 60
     values = [0] + [2 ** i for i in range(1, 11 + 1)]
     score = 0
+    new_score = 0
 
     def __init__(self):
         self.M = [[0 for _ in range(self.size)] for _ in range(self.size)]  # Matrix
@@ -123,9 +143,8 @@ class Game:
         pygame.display.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
-        self.window = pygame.display.set_mode((self.size * self.cell_size, self.size * self.cell_size), vsync=1)
+        self.window = pygame.display.set_mode((self.dim, self.dim + H.height), vsync=1)
         pygame.display.set_caption("2048")
-        self.font = pygame.font.Font("OpenSans-Bold.ttf", 52)
         self.CellsPrerendered = {i: Cell(i) for i in self.values}
 
         self.main_loop()
@@ -147,9 +166,11 @@ class Game:
                     self.game_notOver = False
 
             if self.move_time_remaining == 0:
-                if self.cells_being_animated:  # something has moved
+                if self.cells_being_animated:
+                    # things to be done when move ends
                     self.reset_animations()
                     self.spawn_cell()
+                    self.score = self.new_score
 
                 pressed_key = True
                 if keys[pygame.K_LEFT] or keys[pygame.K_a]:  # ←
@@ -177,6 +198,8 @@ class Game:
 
     def redraw(self):
         G.window.fill(Colors.board_background)
+
+        H.draw()
 
         for row, row_of_cells in enumerate(self.M):
             for col, val in enumerate(row_of_cells):
@@ -222,8 +245,7 @@ class Game:
         self.M[row_absorbed][col_absorbed] = 0
         self.no_longer_mergeable.add((row_absorbent, col_absorbent))
 
-        self.score += self.M[row_absorbent][col_absorbent]
-        print(self.score)
+        self.new_score += self.M[row_absorbent][col_absorbent]
 
     def find_maximum_movement(self, row_start, col_start, dir_x, dir_y):
         if dir_x != 0:  # x direction
@@ -263,4 +285,5 @@ os.chdir(os.path.dirname(__file__))
 
 G = Game()
 if __name__ == "__main__":
+    H = Header()
     G.start()
