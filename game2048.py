@@ -159,12 +159,14 @@ class Game:
         while self.game_notOver:
             self.clock.tick(self.fps)
 
-            keys = pygame.key.get_pressed()
-            # mouse = pygame.mouse.get_pos()
-
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
+                if event.type == pygame.QUIT:
                     self.game_notOver = False
+
+            keys = pygame.key.get_pressed()
+
+            if keys[pygame.K_ESCAPE]:
+                self.game_notOver = False
 
             if self.move_time_remaining == 0:
                 if self.cells_being_animated:
