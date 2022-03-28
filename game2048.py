@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import os
-import pygame
 import random
+
+import pygame
 
 
 class Colors:
@@ -42,8 +43,8 @@ class Colors:
 class Text:
     def __init__(self, text, color, size):
         self.font = pygame.font.Font("OpenSans-Bold.ttf", size)
-        self.text_width, self.text_height = self.font.size(text)
         self.text = self.font.render(text, True, color)
+        self.width, self.height = self.text.get_size()
 
     def draw(self, x, y):
         G.window.blit(self.text, (x, y))
@@ -76,7 +77,7 @@ class Cell:
     def draw(self, x_real, y_real):
         self.tile.draw(x_real + G.grid_spacing, y_real + G.grid_spacing + H.height)
         if self.value:
-            self.text.draw(x_real + (G.cell_size - self.text.text_width) / 2, y_real + (G.cell_size - self.text.text_height) / 2 + H.height)
+            self.text.draw(x_real + (G.cell_size - self.text.width) / 2, y_real + (G.cell_size - self.text.height) / 2 + H.height)
 
 
 class Animation:
@@ -113,7 +114,7 @@ class Header:
     def draw(self):
         pygame.draw.rect(G.window, Colors.header, (0, 0, G.dim, self.height))
         text = Text(f"score: {G.score}", Colors.header_font, self.font_size)
-        text.draw((G.dim - text.text_width) // 2, (H.height - text.text_height) // 2)
+        text.draw((G.dim - text.width) // 2, (H.height - text.height) // 2)
 
 
 class Game:
