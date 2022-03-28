@@ -75,9 +75,9 @@ class Cell:
             self.text = Text(str(value), Colors.font[value], self.font_size)
 
     def draw(self, x_real, y_real):
-        self.tile.draw(x_real + G.grid_spacing, y_real + G.grid_spacing + H.height)
+        self.tile.draw(x_real + G.grid_spacing, y_real + G.grid_spacing + G.H.height)
         if self.value:
-            self.text.draw(x_real + (G.cell_size - self.text.width) / 2, y_real + (G.cell_size - self.text.height) / 2 + H.height)
+            self.text.draw(x_real + (G.cell_size - self.text.width) / 2, y_real + (G.cell_size - self.text.height) / 2 + G.H.height)
 
 
 class Animation:
@@ -114,7 +114,7 @@ class Header:
     def draw(self):
         pygame.draw.rect(G.window, Colors.header, (0, 0, G.dim, self.height))
         text = Text(f"score: {G.score}", Colors.header_font, self.font_size)
-        text.draw((G.dim - text.width) // 2, (H.height - text.height) // 2)
+        text.draw((G.dim - text.width) // 2, (self.height - text.height) // 2)
 
 
 class Game:
@@ -139,12 +139,13 @@ class Game:
         self.reset_animations()
 
     def start(self):
+        self.H = Header()
         self.move_time = 60 if self.debug_anim else 20
         self.reset_animations()
         pygame.display.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
-        self.window = pygame.display.set_mode((self.dim, self.dim + H.height), vsync=1)
+        self.window = pygame.display.set_mode((self.dim, self.dim + self.H.height), vsync=1)
         pygame.display.set_caption("2048")
         self.CellsPrerendered = {i: Cell(i) for i in self.values}
 
@@ -204,7 +205,7 @@ class Game:
     def redraw(self):
         G.window.fill(Colors.board_background)
 
-        H.draw()
+        self.H.draw()
 
         for row, row_of_cells in enumerate(self.M):
             for col, val in enumerate(row_of_cells):
@@ -290,5 +291,4 @@ os.chdir(os.path.dirname(__file__))
 
 G = Game()
 if __name__ == "__main__":
-    H = Header()
     G.start()
